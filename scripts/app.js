@@ -1,4 +1,3 @@
-//Font Awesome cdn
 const fontAwesome = document.createElement('link');
 fontAwesome.setAttribute('rel', 'stylesheet');
 fontAwesome.setAttribute('href', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css');
@@ -47,7 +46,7 @@ const postLikes = async (id)=>{
     
 }
 
-//Update UI without refetching data when a like is added
+
 const updateUI = (id, likes) => {
     let meal = document.getElementById(id);
     console.log(meal);
@@ -55,6 +54,42 @@ const updateUI = (id, likes) => {
     let meal_likes = meal_info.querySelector('.likes');
     meal_likes.innerHTML = likes;
 }
+const updateUIWithComments = (comment) => {
+    let commentsDiv = document.querySelector('.comments');
+    commentsDiv.innerHTML += `
+    <div class="comment">
+        <div class="comment-header">
+            <h5 class="comment-author">${comment.username}</h5>
+            <span class="comment-date">${comment.creation_date}</span>
+        </div>
+        <p class="comment-body">${comment.comment}</p>
+    </div>
+    `;
+}
+
+const updateUINumberOfComments = (comments) => {
+    let totalComments = document.querySelector('.comment-total');
+    totalComments.innerHTML = comments.length;
+}
+
+const clearCommentsInput = () => {
+    let username = document.getElementById('username');
+    let comment = document.getElementById('comment');
+    username.value = '';
+    comment.value = '';
+
+}
+
+const checkCommentsInput = () => {
+    let username = document.getElementById('username');
+    let comment = document.getElementById('comment');
+    if(username.value === '' || comment.value === '') {
+        alert('Please fill all fields');
+        return false;
+    }
+    return true;
+}
+
 
 
 const getComments = async (id)=>{
@@ -87,10 +122,16 @@ const postComments = async (id, comment,user)=>{
 
 const addComment = async (id, comment,user,e)=>{
     e.preventDefault();
+    if(!checkCommentsInput()) return;
     let comments = await postComments(id, comment,user);
     if(comments.error) return;
-    let mealComments = await mealWithComments(id);
-    console.log(mealComments);
+    let Comments = await getComments(id);
+    console.log(Comments);
+    let lastComment = Comments[Comments.length - 1];
+    console.log(lastComment);
+    updateUIWithComments(lastComment);
+    updateUINumberOfComments(Comments);
+    clearCommentsInput();
 
 }
 
