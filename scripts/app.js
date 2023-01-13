@@ -15,7 +15,7 @@ const fetchAllMeals = async () => {
 
 
 
-fetchMealById = async (mealId) => {
+const fetchMealById = async (mealId) => {
     const response = await fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i=' + mealId);
     const data = await response.json();
     return data;
@@ -49,9 +49,9 @@ const postLikes = async (id)=>{
 
 const updateUI = (id, likes) => {
     let meal = document.getElementById(id);
-    let meal_info = meal.querySelector('.mealInfo');
-    let meal_likes = meal_info.querySelector('.likes');
-    meal_likes.innerHTML = likes;
+    let mealInfoDiv = meal.querySelector('.mealInfo');
+    let mealLikesDiv = mealInfoDiv.querySelector('.likes');
+    mealLikesDiv.innerHTML = likes;
 }
 const updateUIWithComments = (comment) => {
     let commentsDiv = document.querySelector('.comments');
@@ -247,15 +247,6 @@ const closePopup = () => {
     
     document.body.style.overflow = 'scroll';
 };
-
-
-
-
-const showPopup = (id)=>{
-    mealDiv.addEventListener('click', () => {
-        popup(meal.idMeal);
-    });
-}
 
 
 const listAllMeals = async () => {
