@@ -191,7 +191,7 @@ const popup = async (mealId) => {
                         <label for="comment">Comment</label>
                         <textarea id="comment" placeholder="Enter your comment"></textarea>
                     </div>
-                    <button type="submit" class="comment-btn" onclick="addComment('${meal.idMeal}', document.getElementById('comment').value, document.getElementById('username').value, event)">Comment</button>
+                    <button type="submit" class="comment-btn">Comment</button>
                     
                 </form>
                 <div class="comments">
@@ -214,6 +214,17 @@ const popup = async (mealId) => {
     mealPopup.style.overflowY = 'scroll';
 
     mealsDiv.appendChild(mealPopup);
+
+    //comment form
+    const commentForm = document.querySelector('.comment-form');
+    commentForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.querySelector('#username').value;
+      const comment = document.querySelector('#comment').value;
+      addComment(meal.idMeal, username, comment,e);
+    });
+
+    // close popup
 
     const closeBtn = document.querySelector('.close-popup');
     closeBtn.addEventListener('click', () => {
@@ -238,7 +249,7 @@ const listAllMeals = async () => {
             <div class="mealInfo">
                 <h3>${meal.strMeal}</h3>
                 <span class="view">View</span>
-               <i onclick="like(${meal.idMeal})" class="fas fa-heart"></i>         
+               <i class="like fas fa-heart"></i>         
                 <span class="likes">${meal.likes}</span>
             </div>
         `;
@@ -246,6 +257,11 @@ const listAllMeals = async () => {
     const view = mealDiv.querySelector('.view');
     view.addEventListener('click', () => {
       popup(meal.idMeal);
+    });
+
+    const likeBtn = mealDiv.querySelector('.like');
+    likeBtn.addEventListener('click', () => {
+      like(meal.idMeal);
     });
 
     mealsDiv.appendChild(mealDiv);
