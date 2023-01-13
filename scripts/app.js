@@ -146,7 +146,7 @@ const popup = async (mealId) => {
     const mealPopup = document.createElement('div');
     mealPopup.classList.add('meal-popup');
     mealPopup.innerHTML = `
-            <span onclick="closePopup()" class="close-popup"><i class="fas fa-times"></i></span>
+            <span class="close-popup"><i class="fas fa-times"></i></span>
             <div class="mealInfo" id="${meal.idMeal}">
                 <h3>${meal.strMeal}</h3>
                 <div class="meal-img">
@@ -214,29 +214,18 @@ const popup = async (mealId) => {
     mealPopup.style.overflowY = 'scroll';
 
     mealsDiv.appendChild(mealPopup);
+
+    const closeBtn = document.querySelector('.close-popup');
+    closeBtn.addEventListener('click', () => {
+      mealPopup.remove();
+    });
   });
-};
-
-const closePopup = () => {
-  document.querySelector('.meal-popup').remove();
-
-  document.body.style.overflow = 'scroll';
 };
 
 const listAllMeals = async () => {
   const allMeals = await mealsWithLikes();
 
   const meals = document.querySelector('.meals');
-  const loading = document.createElement('div');
-  loading.className = 'loading';
-  loading.innerHTML = `
-        <div class="spinner">
-            <i class="fas fa-utensils"></i>
-        </div>
-    `;
-
-  meals.appendChild(loading);
-
   // show meals
   allMeals.forEach((meal) => {
     const mealDiv = document.createElement('div');
@@ -248,15 +237,18 @@ const listAllMeals = async () => {
             </div>
             <div class="mealInfo">
                 <h3>${meal.strMeal}</h3>
-                <span class="view" onclick="popup(${meal.idMeal})">View</span>
+                <span class="view">View</span>
                <i onclick="like(${meal.idMeal})" class="fas fa-heart"></i>         
                 <span class="likes">${meal.likes}</span>
             </div>
         `;
 
+    const view = mealDiv.querySelector('.view');
+    view.addEventListener('click', () => {
+      popup(meal.idMeal);
+    });
+
     mealsDiv.appendChild(mealDiv);
-    // remove loading after meals are shown
-    loading.remove();
   });
   numberOfMeals.innerHTML = `Meals [${allMeals.length}]`;
 };
