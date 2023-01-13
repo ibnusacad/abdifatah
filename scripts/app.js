@@ -1,8 +1,9 @@
+/* eslint-disable no-unused-vars */
+
 const fontAwesome = document.createElement('link');
 fontAwesome.setAttribute('rel', 'stylesheet');
 fontAwesome.setAttribute('href', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css');
 document.head.appendChild(fontAwesome);
-
 
 const mealsDiv = document.querySelector('.meals');
 const numberOfMeals = document.querySelector('.numberOfMeals');
@@ -12,50 +13,43 @@ const fetchAllMeals = async () => {
   return data;
 };
 
-
-
-
 const fetchMealById = async (mealId) => {
-    const response = await fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i=' + mealId);
-    const data = await response.json();
-    return data;
+  const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`);
+  const data = await response.json();
+  return data;
 };
 
+const getLikes = async () => {
+  const uri = 'https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/R0U3YhWaag3EdpAQTbkm/likes';
+  const response = await fetch(uri);
+  const data = await response.json();
+  return data;
+};
 
-const getLikes = async ()=>{
-    let uri =  `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/R0U3YhWaag3EdpAQTbkm/likes`
-    const response = await fetch(uri);
-    const data = await response.json();
-    return data;
-    
-}
-
-const postLikes = async (id)=>{
-    let uri =  `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/R0U3YhWaag3EdpAQTbkm/likes`
-    const response = await fetch(uri, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            item_id: id
-        }),
-    });
-    const data = await response.text();
-    return data;
-    
-}
-
+const postLikes = async (id) => {
+  const uri = 'https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/R0U3YhWaag3EdpAQTbkm/likes';
+  const response = await fetch(uri, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      item_id: id,
+    }),
+  });
+  const data = await response.text();
+  return data;
+};
 
 const updateUI = (id, likes) => {
-    let meal = document.getElementById(id);
-    let mealInfoDiv = meal.querySelector('.mealInfo');
-    let mealLikesDiv = mealInfoDiv.querySelector('.likes');
-    mealLikesDiv.innerHTML = likes;
-}
+  const meal = document.getElementById(id);
+  const mealInfoDiv = meal.querySelector('.mealInfo');
+  const mealLikesDiv = mealInfoDiv.querySelector('.likes');
+  mealLikesDiv.innerHTML = likes;
+};
 const updateUIWithComments = (comment) => {
-    let commentsDiv = document.querySelector('.comments');
-    commentsDiv.innerHTML += `
+  const commentsDiv = document.querySelector('.comments');
+  commentsDiv.innerHTML += `
     <div class="comment">
         <div class="comment-header">
             <h5 class="comment-author">${comment.username}</h5>
@@ -64,107 +58,94 @@ const updateUIWithComments = (comment) => {
         <p class="comment-body">${comment.comment}</p>
     </div>
     `;
-}
+};
 
 const updateUINumberOfComments = (comments) => {
-    let totalComments = document.querySelector('.comment-total');
-    totalComments.innerHTML = comments.length;
-}
+  const totalComments = document.querySelector('.comment-total');
+  totalComments.innerHTML = comments.length;
+};
 
 const clearCommentsInput = () => {
-    let username = document.getElementById('username');
-    let comment = document.getElementById('comment');
-    username.value = '';
-    comment.value = '';
-
-}
+  const username = document.getElementById('username');
+  const comment = document.getElementById('comment');
+  username.value = '';
+  comment.value = '';
+};
 
 const checkCommentsInput = () => {
-    let username = document.getElementById('username');
-    let comment = document.getElementById('comment');
-    if(username.value === '' || comment.value === '') {
-        return false;
-    }
-    return true;
-}
+  const username = document.getElementById('username');
+  const comment = document.getElementById('comment');
+  if (username.value === '' || comment.value === '') {
+    return false;
+  }
+  return true;
+};
 
+const getComments = async (id) => {
+  const uri = `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/R0U3YhWaag3EdpAQTbkm/comments?item_id=${id}`;
+  const response = await fetch(uri);
+  const data = await response.json();
+  return data;
+};
 
+const postComments = async (id, comment, user) => {
+  const uri = 'https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/R0U3YhWaag3EdpAQTbkm/comments';
+  const response = await fetch(uri, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      item_id: id,
+      username: user,
+      comment,
+    }),
+  });
+  const data = await response.text();
+  return data;
+};
 
-const getComments = async (id)=>{
-    let uri =  `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/R0U3YhWaag3EdpAQTbkm/comments?item_id=${id}`
-    const response = await fetch(uri);
-    const data = await response.json();
-    return data;
-    
-}
+const addComment = async (id, comment, user, e) => {
+  e.preventDefault();
+  if (!checkCommentsInput()) return;
+  const comments = await postComments(id, comment, user);
+  if (comments.error) return;
+  const Comments = await getComments(id);
+  const lastComment = Comments[Comments.length - 1];
+  updateUIWithComments(lastComment);
+  updateUINumberOfComments(Comments);
+  clearCommentsInput();
+};
 
-const postComments = async (id, comment,user)=>{
-    let uri =  `https://us-central1-involvement-api.cloudfunctions.net/capstoneApi/apps/R0U3YhWaag3EdpAQTbkm/comments`
-    const response = await fetch(uri, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            item_id: id,
-            username: user,
-            comment: comment
-        }),
-    });
-    const data = await response.text();
-    return data;
-    
-}
+const mealsWithLikes = async () => {
+  const meals = await fetchAllMeals();
+  const likes = await getLikes();
+  const mealsWithLikes = meals.meals.map((meal) => {
+    const likesCount = likes.filter((like) => like.item_id === meal.idMeal);
+    meal.likes = likesCount[0]?.likes || 0;
+    return meal;
+  });
+  return mealsWithLikes;
+};
 
+const like = async (id) => {
+  const likes = await postLikes(id);
+  getLikes().then((data) => {
+    const likesCount = data.filter((like) => like.item_id === id);
+    updateUI(id, likesCount[0]?.likes);
+  });
+};
 
-
-const addComment = async (id, comment,user,e)=>{
-    e.preventDefault();
-    if(!checkCommentsInput()) return;
-    let comments = await postComments(id, comment,user);
-    if(comments.error) return;
-    let Comments = await getComments(id);
-    let lastComment = Comments[Comments.length - 1];
-    updateUIWithComments(lastComment);
-    updateUINumberOfComments(Comments);
-    clearCommentsInput();
-
-}
-
-
-
-const mealsWithLikes = async ()=>{
-    let meals = await fetchAllMeals();
-    let likes = await getLikes();
-    let mealsWithLikes = meals.meals.map(meal => {
-        let likesCount = likes.filter(like => like.item_id === meal.idMeal);
-        meal.likes = likesCount[0]?.likes || 0;
-        return meal;
-    });
-    return mealsWithLikes;
-}
-
-
-const like = async (id)=>{
-    let likes = await postLikes(id);
-    getLikes().then(data => {
-        let likesCount = data.filter(like => like.item_id === id);
-        updateUI(id, likesCount[0]?.likes);
-    });
-}
-
-
-//popup
+// popup
 const popup = async (mealId) => {
-    let meal = fetchMealById(mealId);
-    let Comments = await getComments(mealId);
+  const meal = fetchMealById(mealId);
+  const Comments = await getComments(mealId);
 
-
-    meal.then(data => {
-        const meal = data.meals[0];
-        const mealPopup = document.createElement('div');
-        mealPopup.classList.add('meal-popup');
-        mealPopup.innerHTML = `
+  meal.then((data) => {
+    const meal = data.meals[0];
+    const mealPopup = document.createElement('div');
+    mealPopup.classList.add('meal-popup');
+    mealPopup.innerHTML = `
             <span onclick="closePopup()" class="close-popup"><i class="fas fa-times"></i></span>
             <div class="mealInfo" id="${meal.idMeal}">
                 <h3>${meal.strMeal}</h3>
@@ -200,7 +181,7 @@ const popup = async (mealId) => {
                 </ul>
             </div>
             <div class="meal-comments">
-                <h4>Comments <span class="comment-total">${Comments.length > 0 ? Comments.length : "0"}</h4>
+                <h4>Comments <span class="comment-total">${Comments.length > 0 ? Comments.length : '0'}</h4>
                 <form class="comment-form">
                     <div class="form-control">
                         <label for="username">Username</label>
@@ -214,8 +195,7 @@ const popup = async (mealId) => {
                     
                 </form>
                 <div class="comments">
-                    ${Comments.length > 0 ? Comments.map(comment => {
-                        return `
+                    ${Comments.length > 0 ? Comments.map((comment) => `
                             <div class="comment">
                                 <div class="comment-header">
                                     <h5 class="comment-author">${comment.username}</h5>
@@ -223,71 +203,62 @@ const popup = async (mealId) => {
                                 </div>
                                 <p class="comment-body">${comment.comment}</p>
                             </div>
-                        `;
-                    }).join('') : 'No comments yet'}
+                        `).join('') : 'No comments yet'}
                 </div>
             </div>
 
             `;
-            mealPopup.style.display = 'flex';
-            //scroll to none to prevent scrolling when popup is open
-            document.body.style.overflow = 'hidden';
-            mealPopup.style.overflowY = 'scroll';
+    mealPopup.style.display = 'flex';
+    // scroll to none to prevent scrolling when popup is open
+    document.body.style.overflow = 'hidden';
+    mealPopup.style.overflowY = 'scroll';
 
-
-
-
-        mealsDiv.appendChild(mealPopup);
-    });
-
+    mealsDiv.appendChild(mealPopup);
+  });
 };
 
 const closePopup = () => {
-    document.querySelector('.meal-popup').remove();
-    
-    document.body.style.overflow = 'scroll';
+  document.querySelector('.meal-popup').remove();
+
+  document.body.style.overflow = 'scroll';
 };
 
-
 const listAllMeals = async () => {
-    let allMeals = await mealsWithLikes();
+  const allMeals = await mealsWithLikes();
 
-    const meals = document.querySelector('.meals');
-    const loading = document.createElement('div');
-    loading.className = 'loading';
-    loading.innerHTML = `
+  const meals = document.querySelector('.meals');
+  const loading = document.createElement('div');
+  loading.className = 'loading';
+  loading.innerHTML = `
         <div class="spinner">
             <i class="fas fa-utensils"></i>
         </div>
     `;
 
-    meals.appendChild(loading);
+  meals.appendChild(loading);
 
-
-    //show meals
-    allMeals.forEach(meal => {
-        const mealDiv = document.createElement('div');
-        mealDiv.className = 'meal';
-        mealDiv.id = meal.idMeal;
-        mealDiv.innerHTML = `
+  // show meals
+  allMeals.forEach((meal) => {
+    const mealDiv = document.createElement('div');
+    mealDiv.className = 'meal';
+    mealDiv.id = meal.idMeal;
+    mealDiv.innerHTML = `
             <div class="meal-image"">
                 <img src="${meal.strMealThumb}" alt="meal">
             </div>
             <div class="mealInfo">
                 <h3>${meal.strMeal}</h3>
                 <span class="view" onclick="popup(${meal.idMeal})">View</span>
-               <i onclick="${like(meal.idMeal)}" class="fas fa-heart"></i>         
+               <i onclick="like(${meal.idMeal})" class="fas fa-heart"></i>         
                 <span class="likes">${meal.likes}</span>
             </div>
         `;
 
-        
-        mealsDiv.appendChild(mealDiv);
-        //remove loading after meals are shown
-        loading.remove();
-
-    });
-    numberOfMeals.innerHTML = `Meals [${allMeals.length}]`;
+    mealsDiv.appendChild(mealDiv);
+    // remove loading after meals are shown
+    loading.remove();
+  });
+  numberOfMeals.innerHTML = `Meals [${allMeals.length}]`;
 };
 
-listAllMeals(); 
+listAllMeals();
