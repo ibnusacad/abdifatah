@@ -49,8 +49,7 @@ const postLikes = async (id)=>{
 
 const updateUI = (id, likes) => {
     let meal = document.getElementById(id);
-    console.log(meal);
-    let meal_info = meal.querySelector('.meal-info');
+    let meal_info = meal.querySelector('.mealInfo');
     let meal_likes = meal_info.querySelector('.likes');
     meal_likes.innerHTML = likes;
 }
@@ -84,7 +83,6 @@ const checkCommentsInput = () => {
     let username = document.getElementById('username');
     let comment = document.getElementById('comment');
     if(username.value === '' || comment.value === '') {
-        alert('Please fill all fields');
         return false;
     }
     return true;
@@ -126,9 +124,7 @@ const addComment = async (id, comment,user,e)=>{
     let comments = await postComments(id, comment,user);
     if(comments.error) return;
     let Comments = await getComments(id);
-    console.log(Comments);
     let lastComment = Comments[Comments.length - 1];
-    console.log(lastComment);
     updateUIWithComments(lastComment);
     updateUINumberOfComments(Comments);
     clearCommentsInput();
@@ -141,7 +137,7 @@ const mealsWithLikes = async ()=>{
     let meals = await fetchAllMeals();
     let likes = await getLikes();
     let mealsWithLikes = meals.meals.map(meal => {
-        let likesCount = likes.filter(like => like.item_id == meal.idMeal);
+        let likesCount = likes.filter(like => like.item_id === meal.idMeal);
         meal.likes = likesCount[0]?.likes || 0;
         return meal;
     });
@@ -163,9 +159,6 @@ const popup = async (mealId) => {
     let meal = fetchMealById(mealId);
     let Comments = await getComments(mealId);
 
-    console.log(Comments);
-
-
 
     meal.then(data => {
         const meal = data.meals[0];
@@ -173,7 +166,7 @@ const popup = async (mealId) => {
         mealPopup.classList.add('meal-popup');
         mealPopup.innerHTML = `
             <span onclick="closePopup()" class="close-popup"><i class="fas fa-times"></i></span>
-            <div class="meal-info" id="${meal.idMeal}">
+            <div class="mealInfo" id="${meal.idMeal}">
                 <h3>${meal.strMeal}</h3>
                 <div class="meal-img">
                     <img src="${meal.strMealThumb}" alt="${meal.strMeal}">
@@ -261,15 +254,25 @@ const closePopup = () => {
 const showPopup = (id)=>{
     mealDiv.addEventListener('click', () => {
         popup(meal.idMeal);
-        console.log(meal.idMeal)
     });
 }
 
 
 const listAllMeals = async () => {
     let allMeals = await mealsWithLikes();
-    //show loading while fetching meals
-    mealsDiv.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i></div>';
+
+    const meals = document.querySelector('.meals');
+    const loading = document.createElement('div');
+    loading.className = 'loading';
+    loading.innerHTML = `
+        <div class="spinner">
+            <i class="fas fa-utensils"></i>
+        </div>
+    `;
+
+    meals.appendChild(loading);
+
+
     //show meals
     allMeals.forEach(meal => {
         const mealDiv = document.createElement('div');
@@ -279,7 +282,7 @@ const listAllMeals = async () => {
             <div class="meal-image"">
                 <img src="${meal.strMealThumb}" alt="meal">
             </div>
-            <div class="meal-info">
+            <div class="mealInfo">
                 <h3>${meal.strMeal}</h3>
                 <span class="view" onclick="popup(${meal.idMeal})">View</span>
                <i onclick="like(${meal.idMeal})" class="fas fa-heart"></i>               
@@ -289,11 +292,10 @@ const listAllMeals = async () => {
 
         
         mealsDiv.appendChild(mealDiv);
-        //hide loading after meals are shown
-        document.querySelector('.loading').style.display = 'none';
+        //remove loading after meals are shown
+        loading.remove();
 
     });
-    console.log(allMeals)
     numberOfMeals.innerHTML = `Meals [${allMeals.length}]`;
 };
 

@@ -136,7 +136,7 @@ header nav ul li a:hover{
     cursor: default;
 }
 
-.meal .meal-info{
+.meal .mealInfo{
     padding: 1rem;
     display: flex;
     justify-content: space-between;
@@ -164,28 +164,28 @@ header nav ul li a:hover{
 .hidden{
     display: none;
 }
-.meal-popup .meal-info{
+.meal-popup .mealInfo{
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 50%;
     width: 80%;
 }
-.meal-popup .meal-info h3{
+.meal-popup .mealInfo h3{
     font-size: 1.5rem;
     font-weight: 600;
     text-align: center;
     text-transform: uppercase;
     color: rgb(12, 7, 39);
 }
-.meal-popup .meal-info .meal-img{
+.meal-popup .mealInfo .meal-img{
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 1rem;
     border: 1px solid rgb(54, 39, 39);
 }
-.meal-popup .meal-info .meal-img img{
+.meal-popup .mealInfo .meal-img img{
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -329,11 +329,12 @@ header nav ul li a:hover{
 }
 
 .loading{
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    width: 100%;
+    width: 100vh;
     background: #000;
     color: #fff;
     font-size: 2rem;
