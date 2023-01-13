@@ -276,7 +276,7 @@ const listAllMeals = async () => {
             <div class="mealInfo">
                 <h3>${meal.strMeal}</h3>
                 <span class="view" onclick="popup(${meal.idMeal})">View</span>
-               <i onclick="like(${meal.idMeal})" class="fas fa-heart"></i>               
+               <i onclick="${like(meal.idMeal)}" class="fas fa-heart"></i>         
                 <span class="likes">${meal.likes}</span>
             </div>
         `;
